@@ -1,0 +1,517 @@
+{
+  "info": {
+    "name": "E-Commerce API",
+    "description": "Complete e-commerce REST API. After Login or Register, the access_token and refresh_token are saved automatically as collection variables.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }]
+  },
+  "variable": [
+    { "key": "base_url",      "value": "http://localhost:8080/api/v1" },
+    { "key": "access_token",  "value": "" },
+    { "key": "refresh_token", "value": "" },
+    { "key": "product_id",    "value": "" },
+    { "key": "category_id",   "value": "" },
+    { "key": "order_id",      "value": "" },
+    { "key": "cart_item_id",  "value": "" },
+    { "key": "review_id",     "value": "" }
+  ],
+  "item": [
+
+    {
+      "name": "Health",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "GET",
+            "url": "{{base_url}}/health"
+          }
+        }
+      ]
+    },
+
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register",
+          "event": [{
+            "listen": "test",
+            "script": { "exec": [
+              "var res = pm.response.json();",
+              "if (res.data && res.data.access_token) {",
+              "  pm.collectionVariables.set('access_token',  res.data.access_token);",
+              "  pm.collectionVariables.set('refresh_token', res.data.refresh_token);",
+              "  console.log('Tokens saved.');",
+              "}"
+            ]}
+          }],
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"alice@example.com\",\n  \"password\": \"secret123\",\n  \"name\": \"Alice\"\n}"
+            },
+            "url": "{{base_url}}/auth/register"
+          }
+        },
+        {
+          "name": "Login",
+          "event": [{
+            "listen": "test",
+            "script": { "exec": [
+              "var res = pm.response.json();",
+              "if (res.data && res.data.access_token) {",
+              "  pm.collectionVariables.set('access_token',  res.data.access_token);",
+              "  pm.collectionVariables.set('refresh_token', res.data.refresh_token);",
+              "  console.log('Tokens saved.');",
+              "}"
+            ]}
+          }],
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@example.com\",\n  \"password\": \"Admin@123\"\n}"
+            },
+            "url": "{{base_url}}/auth/login"
+          }
+        },
+        {
+          "name": "Login (as Customer)",
+          "event": [{
+            "listen": "test",
+            "script": { "exec": [
+              "var res = pm.response.json();",
+              "if (res.data && res.data.access_token) {",
+              "  pm.collectionVariables.set('access_token',  res.data.access_token);",
+              "  pm.collectionVariables.set('refresh_token', res.data.refresh_token);",
+              "  console.log('Tokens saved.');",
+              "}"
+            ]}
+          }],
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"alice@example.com\",\n  \"password\": \"secret123\"\n}"
+            },
+            "url": "{{base_url}}/auth/login"
+          }
+        },
+        {
+          "name": "Refresh Token",
+          "event": [{
+            "listen": "test",
+            "script": { "exec": [
+              "var res = pm.response.json();",
+              "if (res.data && res.data.access_token) {",
+              "  pm.collectionVariables.set('access_token', res.data.access_token);",
+              "  console.log('Access token refreshed.');",
+              "}"
+            ]}
+          }],
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refresh_token\": \"{{refresh_token}}\"\n}"
+            },
+            "url": "{{base_url}}/auth/refresh"
+          }
+        }
+      ]
+    },
+
+    {
+      "name": "Users",
+      "item": [
+        {
+          "name": "Get My Profile",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/users/me"
+          }
+        },
+        {
+          "name": "Update My Profile",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Alice Updated\",\n  \"email\": \"alice.updated@example.com\"\n}"
+            },
+            "url": "{{base_url}}/users/me"
+          }
+        },
+        {
+          "name": "Change Password",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"current_password\": \"secret123\",\n  \"new_password\": \"newpassword456\"\n}"
+            },
+            "url": "{{base_url}}/users/me/password"
+          }
+        }
+      ]
+    },
+
+    {
+      "name": "Categories",
+      "item": [
+        {
+          "name": "List Categories",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "GET",
+            "url": "{{base_url}}/categories"
+          }
+        },
+        {
+          "name": "Get Category by ID",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "GET",
+            "url": "{{base_url}}/categories/{{category_id}}"
+          }
+        },
+        {
+          "name": "Create Category (Admin)",
+          "event": [{
+            "listen": "test",
+            "script": { "exec": [
+              "var res = pm.response.json();",
+              "if (res.data && res.data.id) {",
+              "  pm.collectionVariables.set('category_id', res.data.id);",
+              "  console.log('category_id saved:', res.data.id);",
+              "}"
+            ]}
+          }],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Gadgets\",\n  \"description\": \"Cool tech gadgets\"\n}"
+            },
+            "url": "{{base_url}}/categories"
+          }
+        },
+        {
+          "name": "Update Category (Admin)",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Gadgets & Tech\",\n  \"description\": \"Updated description\"\n}"
+            },
+            "url": "{{base_url}}/categories/{{category_id}}"
+          }
+        },
+        {
+          "name": "Delete Category (Admin)",
+          "request": {
+            "method": "DELETE",
+            "url": "{{base_url}}/categories/{{category_id}}"
+          }
+        }
+      ]
+    },
+
+    {
+      "name": "Products",
+      "item": [
+        {
+          "name": "List Products",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/products?page=1&limit=10",
+              "query": [
+                { "key": "page",        "value": "1" },
+                { "key": "limit",       "value": "10" },
+                { "key": "search",      "value": "",  "disabled": true },
+                { "key": "category_id", "value": "",  "disabled": true },
+                { "key": "sort_by",     "value": "price", "disabled": true },
+                { "key": "sort_order",  "value": "asc",   "disabled": true }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Search Products",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/products?search=keyboard&page=1&limit=10",
+              "query": [
+                { "key": "search", "value": "keyboard" },
+                { "key": "page",   "value": "1" },
+                { "key": "limit",  "value": "10" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Product by ID",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "GET",
+            "url": "{{base_url}}/products/{{product_id}}"
+          }
+        },
+        {
+          "name": "Create Product (Admin)",
+          "event": [{
+            "listen": "test",
+            "script": { "exec": [
+              "var res = pm.response.json();",
+              "if (res.data && res.data.id) {",
+              "  pm.collectionVariables.set('product_id', res.data.id);",
+              "  console.log('product_id saved:', res.data.id);",
+              "}"
+            ]}
+          }],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Wireless Mouse\",\n  \"description\": \"Ergonomic wireless mouse with long battery life\",\n  \"price\": 29.99,\n  \"stock\": 50,\n  \"image_url\": \"https://example.com/mouse.jpg\"\n}"
+            },
+            "url": "{{base_url}}/products"
+          }
+        },
+        {
+          "name": "Update Product (Admin)",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Wireless Mouse Pro\",\n  \"price\": 34.99,\n  \"stock\": 75\n}"
+            },
+            "url": "{{base_url}}/products/{{product_id}}"
+          }
+        },
+        {
+          "name": "Delete Product (Admin)",
+          "request": {
+            "method": "DELETE",
+            "url": "{{base_url}}/products/{{product_id}}"
+          }
+        }
+      ]
+    },
+
+    {
+      "name": "Cart",
+      "item": [
+        {
+          "name": "Get Cart",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/cart"
+          }
+        },
+        {
+          "name": "Add Item to Cart",
+          "event": [{
+            "listen": "test",
+            "script": { "exec": [
+              "var res = pm.response.json();",
+              "if (res.data && res.data.items && res.data.items.length > 0) {",
+              "  var lastItem = res.data.items[res.data.items.length - 1];",
+              "  pm.collectionVariables.set('cart_item_id', lastItem.id);",
+              "  console.log('cart_item_id saved:', lastItem.id);",
+              "}"
+            ]}
+          }],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"product_id\": \"{{product_id}}\",\n  \"quantity\": 2\n}"
+            },
+            "url": "{{base_url}}/cart/items"
+          }
+        },
+        {
+          "name": "Update Cart Item Quantity",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"quantity\": 5\n}"
+            },
+            "url": "{{base_url}}/cart/items/{{cart_item_id}}"
+          }
+        },
+        {
+          "name": "Remove Cart Item",
+          "request": {
+            "method": "DELETE",
+            "url": "{{base_url}}/cart/items/{{cart_item_id}}"
+          }
+        },
+        {
+          "name": "Clear Cart",
+          "request": {
+            "method": "DELETE",
+            "url": "{{base_url}}/cart"
+          }
+        }
+      ]
+    },
+
+    {
+      "name": "Orders",
+      "item": [
+        {
+          "name": "Create Order (Checkout)",
+          "event": [{
+            "listen": "test",
+            "script": { "exec": [
+              "var res = pm.response.json();",
+              "if (res.data && res.data.id) {",
+              "  pm.collectionVariables.set('order_id', res.data.id);",
+              "  console.log('order_id saved:', res.data.id);",
+              "}"
+            ]}
+          }],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"shipping_address\": \"123 Main St, Springfield, IL 62701\",\n  \"notes\": \"Leave at the door\"\n}"
+            },
+            "url": "{{base_url}}/orders"
+          }
+        },
+        {
+          "name": "List My Orders",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/orders?page=1&limit=10",
+              "query": [
+                { "key": "page",  "value": "1" },
+                { "key": "limit", "value": "10" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Order by ID",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/orders/{{order_id}}"
+          }
+        },
+        {
+          "name": "Cancel Order",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/orders/{{order_id}}/cancel"
+          }
+        },
+        {
+          "name": "Update Order Status (Admin)",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"confirmed\"\n}"
+            },
+            "url": "{{base_url}}/orders/{{order_id}}/status"
+          }
+        }
+      ]
+    },
+
+    {
+      "name": "Reviews",
+      "item": [
+        {
+          "name": "List Reviews for Product",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/products/{{product_id}}/reviews?page=1&limit=10",
+              "query": [
+                { "key": "page",  "value": "1" },
+                { "key": "limit", "value": "10" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create Review",
+          "event": [{
+            "listen": "test",
+            "script": { "exec": [
+              "var res = pm.response.json();",
+              "if (res.data && res.data.id) {",
+              "  pm.collectionVariables.set('review_id', res.data.id);",
+              "  console.log('review_id saved:', res.data.id);",
+              "}"
+            ]}
+          }],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"rating\": 5,\n  \"comment\": \"Excellent product, highly recommended!\"\n}"
+            },
+            "url": "{{base_url}}/products/{{product_id}}/reviews"
+          }
+        },
+        {
+          "name": "Update Review",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"rating\": 4,\n  \"comment\": \"Good product, but shipping was slow.\"\n}"
+            },
+            "url": "{{base_url}}/reviews/{{review_id}}"
+          }
+        },
+        {
+          "name": "Delete Review",
+          "request": {
+            "method": "DELETE",
+            "url": "{{base_url}}/reviews/{{review_id}}"
+          }
+        }
+      ]
+    }
+
+  ]
+}
