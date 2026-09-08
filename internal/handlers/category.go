@@ -107,10 +107,14 @@ func (h *CategoryHandler) Update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if n := strings.TrimSpace(req.Name); n != "" {
-		cat.Name = n
+	if req.Name != nil {
+		if n := strings.TrimSpace(*req.Name); n != "" {
+			cat.Name = n
+		}
 	}
-	cat.Description = strings.TrimSpace(req.Description)
+	if req.Description != nil {
+		cat.Description = strings.TrimSpace(*req.Description)
+	}
 
 	if err := h.categories.Update(r.Context(), cat); err != nil {
 		utils.WriteError(w, http.StatusInternalServerError, "internal server error")

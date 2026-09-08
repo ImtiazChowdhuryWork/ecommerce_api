@@ -93,7 +93,7 @@ func (r *orderRepo) Create(ctx context.Context, userID uuid.UUID, req *models.Cr
 func (r *orderRepo) GetByID(ctx context.Context, id uuid.UUID) (*models.Order, error) {
 	order := &models.Order{}
 	err := r.db.QueryRow(ctx, `
-		SELECT id, user_id, status, total_amount, shipping_address, notes, created_at, updated_at
+		SELECT id, user_id, status, total_amount, shipping_address, COALESCE(notes, ''), created_at, updated_at
 		FROM orders WHERE id = $1`, id).
 		Scan(&order.ID, &order.UserID, &order.Status, &order.TotalAmount,
 			&order.ShippingAddress, &order.Notes, &order.CreatedAt, &order.UpdatedAt)
@@ -138,7 +138,7 @@ func (r *orderRepo) ListByUser(ctx context.Context, userID uuid.UUID, page, limi
 	r.db.QueryRow(ctx, `SELECT COUNT(*) FROM orders WHERE user_id = $1`, userID).Scan(&total)
 
 	rows, err := r.db.Query(ctx, `
-		SELECT id, user_id, status, total_amount, shipping_address, notes, created_at, updated_at
+		SELECT id, user_id, status, total_amount, shipping_address, COALESCE(notes, ''), created_at, updated_at
 		FROM orders WHERE user_id = $1
 		ORDER BY created_at DESC LIMIT $2 OFFSET $3`,
 		userID, limit, (page-1)*limit)
@@ -155,7 +155,7 @@ func (r *orderRepo) ListAll(ctx context.Context, page, limit int) ([]*models.Ord
 	r.db.QueryRow(ctx, `SELECT COUNT(*) FROM orders`).Scan(&total)
 
 	rows, err := r.db.Query(ctx, `
-		SELECT id, user_id, status, total_amount, shipping_address, notes, created_at, updated_at
+		SELECT id, user_id, status, total_amount, shipping_address, COALESCE(notes, ''), created_at, updated_at
 		FROM orders
 		ORDER BY created_at DESC LIMIT $1 OFFSET $2`,
 		limit, (page-1)*limit)
@@ -168,9 +168,15 @@ func (r *orderRepo) ListAll(ctx context.Context, page, limit int) ([]*models.Ord
 }
 
 func (r *orderRepo) UpdateStatus(ctx context.Context, id uuid.UUID, status models.OrderStatus) error {
-	_, err := r.db.Exec(ctx,
+	res, err := r.db.Exec(ctx,
 		`UPDATE orders SET status = $1, updated_at = NOW() WHERE id = $2`, status, id)
-	return err
+	if err != nil {
+		return err
+	}
+	if res.RowsAffected() == 0 {
+		return errors.New("order not found")
+	}
+	return nil
 }
 
 func (r *orderRepo) Cancel(ctx context.Context, id, userID uuid.UUID, isAdmin bool) error {

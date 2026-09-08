@@ -489,7 +489,7 @@ Single product with category details. `404` if not found.
 
 #### `PUT /products/{id}` — admin
 
-Partial update — only provided (non-zero) fields are changed. Price and stock of `0` are ignored (treated as "not provided"). To set stock to 0, use the specific field only.
+Partial update — only fields present in the JSON body are changed. Omitted fields keep their current value; `price` and `stock` may be set explicitly to `0`.
 
 ---
 
@@ -641,7 +641,7 @@ Directly set any order status.
 
 Valid statuses: `pending`, `confirmed`, `shipped`, `delivered`, `cancelled`.
 
-Note: this endpoint does **not** restore stock when setting `cancelled`. Use the cancel endpoint for that.
+Note: this endpoint does **not** restore stock when setting `cancelled`. Use the cancel endpoint for that. Returns `404` if the order ID does not exist.
 
 ---
 
