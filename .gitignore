@@ -1,0 +1,16 @@
+# Environment / secrets
+.env
+.env.local
+
+# Build output
+/bin/
+*.exe
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+.idea/
+.vscode/
+*.swp

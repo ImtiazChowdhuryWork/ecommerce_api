@@ -154,6 +154,10 @@ func (h *OrderHandler) UpdateStatus(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err := h.orders.UpdateStatus(r.Context(), id, req.Status); err != nil {
+		if strings.Contains(err.Error(), "not found") {
+			utils.WriteError(w, http.StatusNotFound, "order not found")
+			return
+		}
 		utils.WriteError(w, http.StatusInternalServerError, "internal server error")
 		return
 	}

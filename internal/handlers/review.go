@@ -137,14 +137,16 @@ func (h *ReviewHandler) Update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if req.Rating != 0 {
-		if req.Rating < 1 || req.Rating > 5 {
+	if req.Rating != nil {
+		if *req.Rating < 1 || *req.Rating > 5 {
 			utils.WriteError(w, http.StatusBadRequest, "rating must be between 1 and 5")
 			return
 		}
-		review.Rating = req.Rating
+		review.Rating = *req.Rating
 	}
-	review.Comment = req.Comment
+	if req.Comment != nil {
+		review.Comment = *req.Comment
+	}
 
 	if err := h.reviews.Update(r.Context(), review); err != nil {
 		utils.WriteError(w, http.StatusInternalServerError, "internal server error")

@@ -1,6 +1,6 @@
 -- Seed an admin user (password: Admin@123)
 INSERT INTO users (email, password_hash, name, role) VALUES
-  ('admin@example.com', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy', 'Admin User', 'admin')
+  ('admin@example.com', '$2a$10$wLfcO9Z8pbmFVqOwRCjXgOlFMDu.kpPrOB80b2.69IMbcxw5BK9Su', 'Admin User', 'admin')
 ON CONFLICT (email) DO NOTHING;
 
 -- Seed categories

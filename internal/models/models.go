@@ -152,8 +152,8 @@ type CreateCategoryRequest struct {
 }
 
 type UpdateCategoryRequest struct {
-	Name        string `json:"name"`
-	Description string `json:"description"`
+	Name        *string `json:"name"`
+	Description *string `json:"description"`
 }
 
 type CreateProductRequest struct {
@@ -166,12 +166,12 @@ type CreateProductRequest struct {
 }
 
 type UpdateProductRequest struct {
-	Name        string     `json:"name"`
-	Description string     `json:"description"`
-	Price       float64    `json:"price"`
-	Stock       int        `json:"stock"`
+	Name        *string    `json:"name"`
+	Description *string    `json:"description"`
+	Price       *float64   `json:"price"`
+	Stock       *int       `json:"stock"`
 	CategoryID  *uuid.UUID `json:"category_id"`
-	ImageURL    string     `json:"image_url"`
+	ImageURL    *string    `json:"image_url"`
 }
 
 type AddCartItemRequest struct {
@@ -198,8 +198,8 @@ type CreateReviewRequest struct {
 }
 
 type UpdateReviewRequest struct {
-	Rating  int    `json:"rating"`
-	Comment string `json:"comment"`
+	Rating  *int    `json:"rating"`
+	Comment *string `json:"comment"`
 }
 
 // ------- Shared response types -------

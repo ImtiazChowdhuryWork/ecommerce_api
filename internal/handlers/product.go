@@ -157,23 +157,33 @@ func (h *ProductHandler) Update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if n := strings.TrimSpace(req.Name); n != "" {
-		product.Name = n
+	if req.Name != nil {
+		if n := strings.TrimSpace(*req.Name); n != "" {
+			product.Name = n
+		}
 	}
-	if req.Description != "" {
-		product.Description = strings.TrimSpace(req.Description)
+	if req.Description != nil {
+		product.Description = strings.TrimSpace(*req.Description)
 	}
-	if req.Price >= 0 {
-		product.Price = req.Price
+	if req.Price != nil {
+		if *req.Price < 0 {
+			utils.WriteError(w, http.StatusBadRequest, "price must be non-negative")
+			return
+		}
+		product.Price = *req.Price
 	}
-	if req.Stock >= 0 {
-		product.Stock = req.Stock
+	if req.Stock != nil {
+		if *req.Stock < 0 {
+			utils.WriteError(w, http.StatusBadRequest, "stock must be non-negative")
+			return
+		}
+		product.Stock = *req.Stock
 	}
 	if req.CategoryID != nil {
 		product.CategoryID = req.CategoryID
 	}
-	if req.ImageURL != "" {
-		product.ImageURL = strings.TrimSpace(req.ImageURL)
+	if req.ImageURL != nil {
+		product.ImageURL = strings.TrimSpace(*req.ImageURL)
 	}
 
 	if err := h.products.Update(r.Context(), product); err != nil {
